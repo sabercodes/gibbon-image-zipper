@@ -35,7 +35,7 @@
 
 **Gibbon Image Zipper** solves a common pain point in educational and event administration: collecting profile photos from participants that must conform to strict size and format requirements (e.g., student ID cards, event badges, or school management systems like Gibbon SIS).
 
-Instead of manually checking and resizing each image, drop all photos in a folder, run one command, and receive a clean, compliant ZIP archive ready for upload.
+Instead of manually checking and resizing each image, drop all photos in the `photos/` folder, run one command, and receive a clean, compliant `output.zip` archive ready for upload — no configuration needed.
 
 ---
 
@@ -43,6 +43,8 @@ Instead of manually checking and resizing each image, drop all photos in a folde
 
 | Feature | Description |
 |---|---|
+| **Zero Configuration** | Just drop images in the `photos/` folder and run |
+| **Dynamic Paths** | Input and output paths are resolved automatically relative to the script location |
 | **Filename Validation** | Enforces `username.extension` naming convention |
 | **Dimension Checking** | Validates images are within 360×480 px |
 | **Aspect Ratio Enforcement** | Ensures ratio falls between 1:1.4 and 1:1.2 |
@@ -81,12 +83,6 @@ cd gibbon-image-zipper
 pip install -r requirements.txt
 ```
 
-### As a Package (pip install)
-
-```bash
-pip install gibbon-image-zipper
-```
-
 ### Verify Installation
 
 ```bash
@@ -99,19 +95,16 @@ python -c "from PIL import Image; print('Pillow installed successfully')"
 
 ### Basic Usage
 
-1. Place all participant images in an input folder.
-2. Open `image_zipper.py` and set the paths at the bottom of the file:
-
-```python
-input_folder = '/path/to/your/images'   # Folder containing source images
-output_zip   = 'output.zip'             # Desired output ZIP filename
-```
-
-3. Run the script:
+1. Place all participant images inside the `photos/` folder in the project directory.
+2. Run the script:
 
 ```bash
 python image_zipper.py
 ```
+
+3. The output ZIP file will be created as `output.zip` in the same project directory.
+
+That's it — no paths to configure, no settings to change.
 
 ### Example Output
 
@@ -129,6 +122,8 @@ ZIP file created: output.zip
 ```cmd
 cd C:\path\to\gibbon-image-zipper
 pip install -r requirements.txt
+
+REM Drop your images into the photos\ folder, then:
 python image_zipper.py
 ```
 
@@ -136,7 +131,7 @@ python image_zipper.py
 
 ## 🖼️ Image Requirements
 
-All images in the input folder are validated and processed against these rules:
+All images placed in the `photos/` folder are validated and processed against these rules:
 
 | Requirement | Accepted Value | Action if Non-Compliant |
 |---|---|---|
@@ -146,7 +141,7 @@ All images in the input folder are validated and processed against these rules:
 | **File Format** | `.jpg`, `.jpeg`, `.png` | Skipped with warning |
 | **Filename Format** | `username.ext` | Skipped with warning |
 
-> **Note:** Images that fail filename or format validation are skipped entirely. Images that fail dimension/ratio checks are automatically resized before packaging.
+> **Note:** Images that fail filename or format validation are skipped entirely. Images that fail dimension/ratio checks are automatically resized before packaging. Original files are never modified.
 
 ---
 
@@ -154,6 +149,8 @@ All images in the input folder are validated and processed against these rules:
 
 ```
 gibbon-image-zipper/
+├── photos/                # 📸 Drop your images here before running
+├── output.zip             # 📦 Generated after running the script (git-ignored)
 ├── .github/
 │   ├── ISSUE_TEMPLATE/
 │   │   ├── bug_report.md
@@ -168,6 +165,8 @@ gibbon-image-zipper/
 │   ├── installation.md
 │   ├── architecture.md
 │   ├── configuration.md
+│   ├── development-guide.md
+│   ├── folder-structure.md
 │   └── troubleshooting.md
 ├── image_zipper.py        # Core script
 ├── requirements.txt       # Python dependencies
@@ -175,10 +174,12 @@ gibbon-image-zipper/
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── CODE_OF_CONDUCT.md
-├── LICENSE
+├── FAQ.md
+├── LICENSE.md
 ├── README.md
 ├── ROADMAP.md
 ├── SECURITY.md
+├── SUPPORT.md
 └── .gitignore
 ```
 
@@ -186,14 +187,19 @@ gibbon-image-zipper/
 
 ## ⚙️ Configuration
 
-Currently the script is configured by editing the two variables at the bottom of `image_zipper.py`:
+No configuration is needed. The script automatically resolves paths relative to its own location:
 
 ```python
-input_folder = r'C:\path\to\images'  # Input directory (absolute or relative)
-output_zip   = 'output.zip'          # Output ZIP filename
+input_folder = os.path.join(os.path.dirname(__file__), 'photos')
+output_zip   = os.path.join(os.path.dirname(__file__), 'output.zip')
 ```
 
-See [`docs/configuration.md`](docs/configuration.md) for planned CLI argument support.
+- **Input:** `photos/` folder next to `image_zipper.py`
+- **Output:** `output.zip` next to `image_zipper.py`
+
+This means the script works correctly regardless of where the project is placed on any machine — no hardcoded paths.
+
+See [`docs/configuration.md`](docs/configuration.md) for details on the hardcoded processing parameters (dimensions, aspect ratio) and planned CLI argument support.
 
 ---
 
@@ -225,7 +231,7 @@ For security vulnerabilities, please see [`SECURITY.md`](SECURITY.md). Do **not*
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see the [`LICENSE`](LICENSE) file for details.
+This project is licensed under the **MIT License** — see the [`LICENSE.md`](LICENSE.md) file for details.
 
 ---
 
